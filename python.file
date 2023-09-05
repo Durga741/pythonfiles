@@ -1,0 +1,78 @@
+import speech_recognition as sr
+import pyttsx3
+import datetime as dt
+import pywhatkit as pk
+import wikipedia as wiki
+listener = sr.Recognizer()
+speaker = pyttsx3.init()
+rate = speaker.getProperty('rate')   # getting details of current speaking rate
+print (rate)                        #printing current voice rate
+speaker.setProperty('rate', 150)     # setting up new voice rate
+voices = speaker.getProperty('voices')       #getting details of current voice
+	#engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
+speaker.setProperty('voice', voices[1].id)
+
+def speak(text):
+    speaker.say('yes durga,'+text)
+    speaker.runAndWait()
+def speak_ex(text):
+    speaker.say(text)
+    speaker.runAndWait()
+va_name=' virtual assisstant'
+speak_ex('hi durga iam your'+va_name)
+def taking_command():
+    command=''
+    try:
+        with sr.Microphone() as source:
+            print('listening...')
+            voice=listener.listen(source)
+            command=listener.recognize_google(voice)
+            command=command.lower()
+            if va_name in command:
+                command=command.replace(va_name+' ', '')
+               # print(command)
+               # speak(command)
+
+    except:
+        print('check your microphone!!')
+    return command
+while True:
+    user_command = taking_command()
+    #print(user_command)
+    #speak(user_command)
+    if 'close' in user_command:
+        print('your virtual assisstant is closing ')
+        speak('your virtual assisstant is closing ')
+        break
+    elif 'time' in user_command:
+        cur_time=dt.datetime.now().strftime('%I:%M %p')
+        print(cur_time)
+        speak(cur_time)
+    elif 'play' in user_command:
+        user_command=user_command.replace('play'+' ','')
+        print('playing '+user_command)
+        speak('playing '+user_command,)
+        pk.playonyt(user_command)
+        break
+    elif 'search for' in user_command  or 'google' in user_command:
+        user_command=user_command.replace('search for'+' ','')
+        user_command=user_command.replace('google'+' ','')
+        print('searching for '+user_command)
+        speak('searching for '+user_command)
+        pk.search(user_command)
+
+    elif 'who is' in user_command:
+        user_command = user_command.replace('who is' + ' ', '')
+        user_command = user_command.replace('what' + ' ', '')
+        info=wiki.summary(user_command,2)
+        print(info)
+        speak(info)
+    elif 'what is' in user_command or 'what are' in user_command:
+        user_command = user_command.replace('what is'+' ','')
+        user_command = user_command.replace('what are '+ ' ','')
+        print(user_command)
+        speak(user_command)
+    elif 'who are you' in user_command:
+        speak_ex('iam your'+va_name)
+    else:
+        speak_ex('say it again boss')
